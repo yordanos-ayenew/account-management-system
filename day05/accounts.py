@@ -10,14 +10,16 @@ class Account(ABC):
         return self.__balance
     def deposit(self, amount):
         if amount<=0:
-            raise ValueError("Must be positive")
+            raise ValueError("Amount must be positive")
         self.__balance+=amount
     @abstractmethod
     def withdraw(self, amount):
-        pass
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
     @abstractmethod
     def statement(self):
-        pass
+        print(f"Owner: {self.owner}")
+        print(f"Account Number: {self.account_number}")
 
 class SavingsAccount(Account):
     def __init__(self, owner, number, balance=0, rate=0.05):
@@ -26,12 +28,14 @@ class SavingsAccount(Account):
     def add_interest(self):
         self.deposit(self.balance * self.rate)
     def withdraw(self, amount):
+        super().withdraw(amount)
         if amount <= 0:
             raise ValueError("Amount must be positive")
         if amount > self.balance:
             raise ValueError("Insufficient funds")
         self._Account__balance -= amount
     def statement(self):
+        super().statement()
         print(f"[Savings] {self.owner} | Account: {self.account_number} | Balance: {self.balance:.2f} ETB")
 
 class CurrentAccount(Account):
@@ -39,12 +43,14 @@ class CurrentAccount(Account):
         super().__init__(owner, number, balance)
         self.overdraft=overdraft
     def withdraw(self, amount):
+        super().withdraw(amount)
         if amount <= 0:
             raise ValueError("Amount must be positive")
         if amount > self.balance + self.overdraft:
             raise ValueError("Overdraft limit exceeded")
         self._Account__balance -= amount
     def statement(self):
+        super().statement()
         print(f"[Current] {self.owner} | Account: {self.account_number} | Balance: {self.balance:.2f} ETB")
 
 acc1=SavingsAccount("Abebe", 1001, 5000)
